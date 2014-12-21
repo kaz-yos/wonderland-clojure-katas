@@ -78,6 +78,58 @@
   (words-with-one-letter-change "abc" #{"abc" "Abc" "aBc" "abC" "ABc" "AbC" "aBC" "ABC"})
   => #{"Abc" "aBc" "abC"}))
 
+
+;;;
+(defn candidate-words
+  "Pick candidate words from a set"
+  [word words-set]
+  (->> words-set
+       (words-with-same-length word, )
+       (words-with-one-letter-change word, )
+       set))
+
+(mj/facts
+ (mj/fact
+  "Filter words with only one-letter change from various words"
+  (candidate-words "abc" #{"abc" "abcd" "Abc" "Abcd" "aBc" "abC" "ABc" "AbC" "AbCd" "aBC" "ABC"})
+  => #{"Abc" "aBc" "abC"}))
+
+
+;;; Function to test if the last word can reach the target word
+(defn complete-word-seq?
+  "Function to test if the last word can reach the target word"
+  [target-word words-seq]
+  (one-letter-change? (last words-seq) target-word))
+
+(mj/facts
+ (mj/fact
+  "Check last word for completion"
+  (complete-word-seq? "abc" ["bbb" "bbc"]) => true
+  (complete-word-seq? "abc" ["bbb" "cbb"]) => false))
+
+
+;;;
+
+(defn solve
+  "Solver"
+  [valid-words-set word1 word2]
+  (let [valid-words-set (words-with-same-length word1 words-set)]
+    (for [next (words-with-one-letter-change word1 valid-words-set)]
+      )))
+
+
+;;; Create doublets as a closure
+(defn doublets-creator
+  "Create doublets as a closure"
+  [words-set word1 word2]
+  (fn [word1 word2]
+    :out))
+
 ;;; Main function for solving
 (defn doublets [word1 word2]
   "make me work")
+
+
+
+
+
