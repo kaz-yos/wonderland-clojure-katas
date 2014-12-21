@@ -116,12 +116,11 @@
   ;;
   ([valid-words-set word1 word2 acc]
    (cond
-     ;; Complete sequence (Valid)
-     (one-letter-change? word1 word2) [(conj acc word2 true)]
-     ;; No more word to add (Invalid)
-     (empty? (words-with-one-letter-change word1 valid-words-set)) [(conj acc false)]
+     ;; If it can connect to the target word, return the completed seq
+     (one-letter-change? word1 word2) [(conj acc word2)]
      ;; Otherwise, recurse for all possible casees
      ;; If next-word [] occurs, '() is returned from the for macro
+     ;; No need for explicit handling of incomplete seq
      :else (for [next-word (words-with-one-letter-change word1 valid-words-set)
                  solution (candidate-seqs (disj valid-words-set next-word)
                                           next-word
@@ -134,25 +133,41 @@
  (mj/fact
   "Create sequences"
   (candidate-seqs #{"abdd" "abca" "adca" "abba" "fbba" "acba" "azba"} "abcd" "dcba")
-  => '(["abcd" "abca" "abba" "fbba" false] ["abcd" "abca" "abba" "azba" "acba" "dcba" true] ["abcd" "abca" "abba" "acba" "dcba" true] ["abcd" "abca" "adca" false] ["abcd" "abdd" false])
+  => '(["abcd" "abca" "abba" "azba" "acba" "dcba"] ["abcd" "abca" "abba" "acba" "dcba"])
   
   (candidate-seqs #{"abdd" "abca"} "abcd" "dcba")
-  => '(["abcd" "abca" false] ["abcd" "abdd" false])
+  => '()
   
   (candidate-seqs #{"aacd" "aaad" "abbd" "abbb" "abcc" "accc" "abdd" "addd"} "abcd" "dcba")
-  => '(["abcd" "aacd" "aaad" false] ["abcd" "abbd" "abbb" false] ["abcd" "abbd" "abdd" "addd" false] ["abcd" "abcc" "accc" false] ["abcd" "abdd" "abbd" "abbb" false] ["abcd" "abdd" "addd" false])
+  => '()
 
   (candidate-seqs #{"aacd" "aaad" "abbd" "abbb" "abcc" "accc" "abdd" "addd" "dddd" "dcdd" "dcbd" "dcba"} "abcd" "dcba")
-  => '(["abcd" "aacd" "aaad" false] ["abcd" "abbd" "abbb" false] ["abcd" "abbd" "abdd" "addd" "dddd" "dcdd" "dcbd" "dcba" true] ["abcd" "abcc" "accc" false] ["abcd" "abdd" "abbd" "abbb" false] ["abcd" "abdd" "addd" "dddd" "dcdd" "dcbd" "dcba" true])))
-
+  => '(["abcd" "abbd" "abdd" "addd" "dddd" "dcdd" "dcbd" "dcba"] ["abcd" "abdd" "addd" "dddd" "dcdd" "dcbd" "dcba"])))
 
 
 ;;; Create doublets as a closure
-(defn doublets-creator
-  "Create doublets as a closure"
+(defn doublets-with-words-set
+  "Pick the shortest sequence"
   [words-set word1 word2]
-  (fn [word1 word2]
-    :out))
+  (let [valid-words-set (words-with-same-length word1 words-set)]
+    (candidate-seqs valid-words-set word1 word2)))
+
+(mj/facts
+ (mj/fact
+  "Create sequences"
+  (doublets-with-words-set #{"abcde" "abdd" "abca" "adca" "abba" "fbba" "acba" "azba"} "abcd" "dcba")
+  => '(["abcd" "abca" "abba" "azba" "acba" "dcba"] ["abcd" "abca" "abba" "acba" "dcba"])
+  
+  (doublets-with-words-set #{"abcde" "abdd" "abca"} "abcd" "dcba")
+  => '()
+  
+  (doublets-with-words-set #{"abcde" "aacd" "aaad" "abbd" "abbb" "abcc" "accc" "abdd" "addd"} "abcd" "dcba")
+  => '()
+
+  (doublets-with-words-set #{"abcde" "aacd" "aaad" "abbd" "abbb" "abcc" "accc" "abdd" "addd" "dddd" "dcdd" "dcbd" "dcba"} "abcd" "dcba")
+  => '(["abcd" "abbd" "abdd" "addd" "dddd" "dcdd" "dcbd" "dcba"] ["abcd" "abdd" "addd" "dddd" "dcdd" "dcbd" "dcba"])))
+
+
 
 ;;; Main function for solving
 (defn doublets [word1 word2]
