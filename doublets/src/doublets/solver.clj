@@ -49,6 +49,9 @@
   "Check for one letter change in two words of same length"
   [word1 word2]
   (->> (map #(= %1 %2) word1 word2)
+       ;; Reverse to detect 1 change
+       (map not, )
+       ;; Numerical transformation
        (map bool->zero-one, )
        (reduce +, )
        (= 1, )))
@@ -65,9 +68,15 @@
 (defn words-with-one-letter-change
   "Function to find words with one letter change"
   [word words-same-len]
-  
-  )
+  (->> words-same-len
+       (filter #(one-letter-change? word %), )
+       set))
 
+(mj/facts
+ (mj/fact
+  "Filter words with only one-letter change"
+  (words-with-one-letter-change "abc" #{"abc" "Abc" "aBc" "abC" "ABc" "AbC" "aBC" "ABC"})
+  => #{"Abc" "aBc" "abC"}))
 
 ;;; Main function for solving
 (defn doublets [word1 word2]
