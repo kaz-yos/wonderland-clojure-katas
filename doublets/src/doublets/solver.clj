@@ -44,7 +44,7 @@
   (bool->zero-one false) => 0))
 
 
-;;; 
+;;;
 (defn one-letter-change?
   "Check for one letter change in two words of same length"
   [word1 word2]
@@ -111,31 +111,39 @@
 ;;;
 
 (defn candidate-seqs
-  "Solver given valid words set, word1 and word2"
+  "All possible sequences given valid words set, word1 and word2"
   ([valid-words-set word1 word2] (candidate-seqs valid-words-set word1 word2 [word1]))
-  ;; 
+  ;;
   ([valid-words-set word1 word2 acc]
-   (for [next-word (words-with-one-letter-change word1 valid-words-set)
-         solution (cond
-                    ;; Complete sequence
-                    (one-letter-change? next-word word2) [(conj acc next-word word2 true)]
-                    ;; No other elements in valid-words-set
-                    (empty? (rest valid-words-set)) [(conj acc next-word false)]
-                    ;; Otherwise, keep going
-                    :else (candidate-seqs (disj valid-words-set next-word)
+   (cond
+     ;; Complete sequence (Valid)
+     (one-letter-change? word1 word2) [(conj acc word2 true)]
+     ;; No more word to add (Invalid)
+     (empty? (words-with-one-letter-change word1 valid-words-set)) [(conj acc false)]
+     ;; Otherwise, recurse for all possible casees
+     ;; If next-word [] occurs, '() is returned from the for macro
+     :else (for [next-word (words-with-one-letter-change word1 valid-words-set)
+                 solution (candidate-seqs (disj valid-words-set next-word)
                                           next-word
                                           word2
-                                          (conj acc next-word)))]
-     solution
-     )))
+                                          (conj acc next-word))]
+             ;; Each function call only returns one solution
+             solution))))
 
 (mj/facts
  (mj/fact
   "Create sequences"
   (candidate-seqs #{"abdd" "abca" "adca" "abba" "fbba" "acba" "azba"} "abcd" "dcba")
-  => '(["abcd" "abca" "abba" "azba" "acba" "dcba" true] ["abcd" "abca" "abba" "acba" "dcba" true])
+  => '(["abcd" "abca" "abba" "fbba" false] ["abcd" "abca" "abba" "azba" "acba" "dcba" true] ["abcd" "abca" "abba" "acba" "dcba" true] ["abcd" "abca" "adca" false] ["abcd" "abdd" false])
+  
   (candidate-seqs #{"abdd" "abca"} "abcd" "dcba")
-  => '()))
+  => '(["abcd" "abca" false] ["abcd" "abdd" false])
+  
+  (candidate-seqs #{"aacd" "aaad" "abbd" "abbb" "abcc" "accc" "abdd" "addd"} "abcd" "dcba")
+  => '(["abcd" "aacd" "aaad" false] ["abcd" "abbd" "abbb" false] ["abcd" "abbd" "abdd" "addd" false] ["abcd" "abcc" "accc" false] ["abcd" "abdd" "abbd" "abbb" false] ["abcd" "abdd" "addd" false])
+
+  (candidate-seqs #{"aacd" "aaad" "abbd" "abbb" "abcc" "accc" "abdd" "addd" "dddd" "dcdd" "dcbd" "dcba"} "abcd" "dcba")
+  => '(["abcd" "aacd" "aaad" false] ["abcd" "abbd" "abbb" false] ["abcd" "abbd" "abdd" "addd" "dddd" "dcdd" "dcbd" "dcba" true] ["abcd" "abcc" "accc" false] ["abcd" "abdd" "abbd" "abbb" false] ["abcd" "abdd" "addd" "dddd" "dcdd" "dcbd" "dcba" true])))
 
 
 
