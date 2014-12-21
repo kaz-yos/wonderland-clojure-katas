@@ -110,12 +110,33 @@
 
 ;;;
 
-(defn solve
-  "Solver"
-  [valid-words-set word1 word2]
-  (let [valid-words-set (words-with-same-length word1 words-set)]
-    (for [next (words-with-one-letter-change word1 valid-words-set)]
-      )))
+(defn candidate-seqs
+  "Solver given valid words set, word1 and word2"
+  ([valid-words-set word1 word2] (candidate-seqs valid-words-set word1 word2 [word1]))
+  ;; 
+  ([valid-words-set word1 word2 acc]
+   (for [next-word (words-with-one-letter-change word1 valid-words-set)
+         solution (cond
+                    ;; Complete sequence
+                    (one-letter-change? next-word word2) [(conj acc next-word word2 true)]
+                    ;; No other elements in valid-words-set
+                    (empty? (rest valid-words-set)) [(conj acc next-word false)]
+                    ;; Otherwise, keep going
+                    :else (candidate-seqs (disj valid-words-set next-word)
+                                          next-word
+                                          word2
+                                          (conj acc next-word)))]
+     solution
+     )))
+
+(mj/facts
+ (mj/fact
+  "Create sequences"
+  (candidate-seqs #{"abdd" "abca" "adca" "abba" "fbba" "acba" "azba"} "abcd" "dcba")
+  => '(["abcd" "abca" "abba" "azba" "acba" "dcba" true] ["abcd" "abca" "abba" "acba" "dcba" true])
+  (candidate-seqs #{"abdd" "abca"} "abcd" "dcba")
+  => '()))
+
 
 
 ;;; Create doublets as a closure
@@ -128,8 +149,3 @@
 ;;; Main function for solving
 (defn doublets [word1 word2]
   "make me work")
-
-
-
-
-
