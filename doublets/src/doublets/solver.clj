@@ -147,28 +147,31 @@
 
 ;;; Create doublets as a closure
 (defn doublets-with-words-set
-  "Pick the shortest sequence"
+  "Pick the shortest sequence among valid ones"
   [words-set word1 word2]
   (let [valid-words-set (words-with-same-length word1 words-set)]
-    (candidate-seqs valid-words-set word1 word2)))
+    (->> (candidate-seqs valid-words-set word1 word2)
+         (sort-by count, )
+         ;; If no valid sequence is possible, return []
+         ;; Otherwise, return the shortest valid sequence
+         (#(if (empty? %) [] (first %))))))
 
 (mj/facts
  (mj/fact
   "Create sequences"
   (doublets-with-words-set #{"abcde" "abdd" "abca" "adca" "abba" "fbba" "acba" "azba"} "abcd" "dcba")
-  => '(["abcd" "abca" "abba" "azba" "acba" "dcba"] ["abcd" "abca" "abba" "acba" "dcba"])
+  => ["abcd" "abca" "abba" "acba" "dcba"]
   
   (doublets-with-words-set #{"abcde" "abdd" "abca"} "abcd" "dcba")
-  => '()
+  => []
   
   (doublets-with-words-set #{"abcde" "aacd" "aaad" "abbd" "abbb" "abcc" "accc" "abdd" "addd"} "abcd" "dcba")
-  => '()
+  => []
 
   (doublets-with-words-set #{"abcde" "aacd" "aaad" "abbd" "abbb" "abcc" "accc" "abdd" "addd" "dddd" "dcdd" "dcbd" "dcba"} "abcd" "dcba")
-  => '(["abcd" "abbd" "abdd" "addd" "dddd" "dcdd" "dcbd" "dcba"] ["abcd" "abdd" "addd" "dddd" "dcdd" "dcbd" "dcba"])))
+  => ["abcd" "abdd" "addd" "dddd" "dcdd" "dcbd" "dcba"]))
 
 
+;;; Main function for solving the puzzle
+(def doublets (partial doublets-with-words-set words-set))
 
-;;; Main function for solving
-(defn doublets [word1 word2]
-  "make me work")
