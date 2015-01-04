@@ -4,6 +4,10 @@
 
 (def values [1.0 1.5 2.0 2.5 3.0 3.5 4.0 4.5 5.0])
 
+;;; By definition the magic number is total/3
+(def total (reduce + values))
+(def magic-number (/ total 3))
+
 ;;; vector to matrix
 (defn matrix
   "Convert length 9 vector to 3x3 matrix"
@@ -40,11 +44,11 @@
   (->> board
        ;; transpose
        (apply map vector, )
-       (equal-row-sums?)))
+       (equal-row-sums?, )))
 
 (mj/facts
  (mj/fact
-  "row sum check"
+  "col sum check"
   (equal-col-sums? [[1 1 1] [1 1 1] [1 1 1]])
   => true
 
@@ -82,7 +86,7 @@
 (defn all-sums-equal?
   [board]
   (and (equal-row-sums? board)
-       (equal-row-sums? board)
+       (equal-col-sums? board)
        (equal-diag-sums? board)))
 
 (mj/facts
@@ -101,6 +105,9 @@
 ;;; Main function
 (defn magic-square [values]
   (->> (comb/permutations values)
-       (matrix, )
-       (filter all-sums-equal?, )))
-
+       (map matrix, )
+       (filter all-sums-equal?, )
+       (first, )
+       ;; Need to convert to vector of vectors for get-in
+       (map vec, )
+       (vec, )))
