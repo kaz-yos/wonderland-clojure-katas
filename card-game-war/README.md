@@ -18,7 +18,6 @@ The rules of this card game are quite simple.
   the highest suit.  The suits ranks in order of ascending value are
   spades, clubs, diamonds, and hearts.
 - The player that runs out of cards loses.
-- If both players run out of cards at the same time, then it is a draw.
 
 
 ## Instructions
@@ -32,6 +31,10 @@ The rules of this card game are quite simple.
 ## Solutions
 
 Once you have your kata solution, you are welcome to submit a link to your repo to share here in this section with others.
+
+https://github.com/aaronj1335/wonderland-clojure-katas/tree/master/card-game-war
+https://github.com/gensym/wonderland-clojure-katas/tree/card-game-war-solution/card-game-war
+https://github.com/vincentjames501/wonderland-clojure-katas/tree/master/card-game-war
 
 If you haven't solved your kata yet - Don't Peek!
 
