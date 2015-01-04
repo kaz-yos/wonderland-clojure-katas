@@ -6,4 +6,5 @@
   
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [midje "1.6.3"]
+                 ;; https://github.com/clojure/math.combinatorics
                  [org.clojure/math.combinatorics "0.0.8"]])

@@ -4,7 +4,19 @@
 
 (def values [1.0 1.5 2.0 2.5 3.0 3.5 4.0 4.5 5.0])
 
-;;; 
+;;; vector to matrix
+(defn matrix
+  "Convert length 9 vector to 3x3 matrix"
+  [values]
+  (partition-all 3 values))
+
+(mj/facts
+ (mj/fact
+  "Matrix conversion check"
+  (matrix (range 1 10))
+  => (partition-all 3 (range 1 10))))
+
+;;; row sums checker
 (defn equal-row-sums?
   "Check if row sums are the same"
   [board]
@@ -21,7 +33,7 @@
   (equal-row-sums? [[1 1 1] [1 1 1] [1 1 2]])
   => false))
 
-;;;
+;;; col sums checker
 (defn equal-col-sums?
   "Check if column sums are the same"
   [board]
@@ -42,7 +54,7 @@
   (equal-col-sums? [[3 3 2] [2 3 2] [1 1 2]])
   => false))
 
-;;;
+;;; diag sum checker
 (defn equal-diag-sums?
   [board]
   (let [[[a _ _] [_ b _] [_ _ c]] board
@@ -66,7 +78,7 @@
   => false))
 
 
-;;;
+;;; All sum checker
 (defn all-sums-equal?
   [board]
   (and (equal-row-sums? board)
@@ -88,6 +100,7 @@
 
 ;;; Main function
 (defn magic-square [values]
-  (let [board (values)])
-  (filter )
-  )
+  (->> (comb/permutations values)
+       (matrix, )
+       (filter all-sums-equal?, )))
+
